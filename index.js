@@ -1,6 +1,9 @@
+
+require('dotenv').config();
+
 const fs = require('fs');
 
-fs.readFile('Dic_Aplicativo_Predictamen_191124.json', 'utf8', async (err, data) => {
+fs.readFile(process.env.Archivo, 'utf8', async (err, data) => {
   if (err) {
     console.error('Error al leer el archivo:', err);
     return;
