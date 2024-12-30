@@ -38,9 +38,13 @@ INSERT INTO FupSections (Name, [Active]) VALUES ('${el}', 1);
         })
     ) }));
 
+
+    const Subforms =  cleaneddata.map( el => ({ Section: el.Section, arrs:el.arrs.filter( k => JSON.parse(k.Question).Type == 24 )}));
+    
     console.log(process.env.Archivo);
     
     fs.writeFileSync("jsondata.json", JSON.stringify(cleaneddata), err => console.log(err));
+    fs.writeFileSync("Subforms.json", JSON.stringify(Subforms), err => console.log(err));
     fs.writeFileSync("Sections.sql", Keys, err => console.log(err));
 
 });
