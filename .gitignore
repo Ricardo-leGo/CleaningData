@@ -1,4 +1,5 @@
 *.json
+*.sql
 !package.json
 .env
 node_modules/

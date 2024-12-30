@@ -9,6 +9,15 @@ fs.readFile(process.env.Archivo, 'utf8', async (err, data) => {
     return;
   }
   const Datafup = JSON.parse(data);
+
+  let Keys = '';
+  
+  Object.keys(Datafup).forEach(el => Keys+=`
+INSERT INTO FupSections (Name, [Active]) VALUES ('${el}', 1);
+`
+);
+
+
  const cleaneddata =  Object.keys(Datafup)
     .map(el => ({"Section":el,arrs: Datafup[el].flat()}))
     .map(el => ({
@@ -27,9 +36,11 @@ fs.readFile(process.env.Archivo, 'utf8', async (err, data) => {
             Order:kk.Order,
             Question: JSON.stringify(kk.Question)
         })
-    ) }))
+    ) }));
 
-    console.log(cleaneddata);
+    console.log(process.env.Archivo);
     
     fs.writeFileSync("jsondata.json", JSON.stringify(cleaneddata), err => console.log(err));
+    fs.writeFileSync("Sections.sql", Keys, err => console.log(err));
+
 });
