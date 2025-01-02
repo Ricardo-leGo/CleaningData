@@ -17,6 +17,8 @@ INSERT INTO FupSections (Name, [Active]) VALUES ('${el}', 1);
 `
 );
 
+const AllQuestions =  [];
+
  const cleaneddata =  Object.keys(Datafup)
     .map(el => ({"Section":el,arrs: Datafup[el].flat()}))
     .map(el => ({
@@ -29,7 +31,23 @@ INSERT INTO FupSections (Name, [Active]) VALUES ('${el}', 1);
             Active:true}) ))
             .flat()
         }))
-    .map( el => ({Section:el.Section,  Active:true, arrs:el.arrs.map(kk => ({
+    .map( el => ({Section:el.Section,  Active:true, arrs:el.arrs.map(kk => {
+      
+  
+      AllQuestions.push (
+        {
+          IdArcher:kk.Question.Id,
+          Alias:kk.Question.Alias,
+          TypeText:kk.Question.TypeText,
+          Type:kk.Question.Type,
+      
+          LevelId:kk.Question.LevelId,
+          ...(kk.Question.RelatedValuesListId? {RelatedValuesListId: Object.keys(kk.Question.RelatedValuesListId).map( R => kk.Question.RelatedValuesListId[R] )}: {} ),
+          ...(kk.Question.SubformData? {SubformFieldId: kk.Question.SubformFieldId, SubformData: kk.Question.SubformData.map(m =>  Object.values(m)[0].Id)  } : {} )
+        }
+      );
+      
+      return ({
             IdArcher:kk.IdArcher,
             DisplayName:kk.DisplayName,
             Active:true,
@@ -37,17 +55,19 @@ INSERT INTO FupSections (Name, [Active]) VALUES ('${el}', 1);
             Vinculated:[],
             // Question: JSON.stringify(kk.Question)
             Question:{
-              IdArcher:kk.Question.Id,
-              Alias:kk.Question.Alias,
-              TypeText:kk.Question.TypeText,
-              Type:kk.Question.Type,
-          
-              LevelId:kk.Question.LevelId,
-              ...(kk.Question.RelatedValuesListId? {RelatedValuesListId: Object.keys(kk.Question.RelatedValuesListId).map( R => ({ Display: R, IdArcher:kk.Question.RelatedValuesListId[R] }))}: {} ),
-              ...(kk.Question.SubformData? {SubformFieldId: kk.Question.SubformFieldId, SubformData: kk.Question.SubformData } : {} )
-            }
+        IdArcher:kk.Question.Id,
+        Alias:kk.Question.Alias,
+        TypeText:kk.Question.TypeText,
+        Type:kk.Question.Type,
+    
+        LevelId:kk.Question.LevelId,
+        ...(kk.Question.RelatedValuesListId? {RelatedValuesListId: Object.keys(kk.Question.RelatedValuesListId).map( R => ({ Display: R, IdArcher:kk.Question.RelatedValuesListId[R] }))}: {} ),
+        ...(kk.Question.SubformData? {SubformFieldId: kk.Question.SubformFieldId, SubformData: kk.Question.SubformData } : {} )
+      }
 
-        })) 
+        })}
+      
+      ) 
     }));
 
     //const Subforms =  cleaneddata.map( el => ({ Section: el.Section, arrs:el.arrs.filter( k => JSON.parse(k.Question).Type == 24 )}));
@@ -93,6 +113,7 @@ INSERT INTO FupSections (Name, [Active]) VALUES ('${el}', 1);
     fs.writeFileSync("SubformsQuests.json", JSON.stringify(SubformsQuests), err => console.log(err));
     fs.writeFileSync("ValuesListIds.json", JSON.stringify(ValuesListIds), err => console.log(err));
     fs.writeFileSync("RelatedValuesListIdCleaned.json", JSON.stringify(RelatedValuesListIdCleaned), err => console.log(err));
+    fs.writeFileSync("AllQuestions.json", JSON.stringify(AllQuestions), err => console.log(err));
     fs.writeFileSync("Sections.sql", Keys, err => console.log(err));
 
 
