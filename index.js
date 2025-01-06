@@ -137,77 +137,106 @@ const AllQuestions =  [];
     const FupMain = [];
 
 
-    cleaneddata.forEach( (el, index) => {
+    cleaneddata.forEach( 
+      (el, index) => {
 
       FupSectionsArr.push(
-
         {
           Name: el.Section, 
           Active:true, 
           Order: index+1
         }
-
-      )
+      );
 
       FupForms.push( {
+        IdSubSectionFK: index+1,
+        Active:true,
+        IdsArcher: JSON.stringify(
 
-        Section: index+1, 
-        Active:true, 
-        IdsArcher: el.arrs.map(m =>{  
+          el.arrs.map(m =>{
+            
+            FupMain.push({
 
-          FupMain.push({
+              "IdArcher": m.IdArcher,
+              "Active": true,
+              "Order": 0,
+              "Vinculated": []
+            });
 
-            "IdArcher": m.IdArcher,
-            "Active": true,
-            "Order": 0,
-            "Vinculated": []
-          })
-          
-          return m.IdArcher }),
-      } );
+          return m.IdArcher })
+        )
+      });
 
-    } )
-    
+    } );
+
         
-    fs.writeFileSync("jsondata.json", JSON.stringify(cleaneddata), err => console.log(err));
-    fs.writeFileSync("Subforms.json", JSON.stringify(Subforms), err => console.log(err));
-    fs.writeFileSync("SubformsQuests.json", JSON.stringify(SubformsQuests), err => console.log(err));
-    fs.writeFileSync("ValuesListIds.json", JSON.stringify(ValuesListIds), err => console.log(err));
-    fs.writeFileSync("RelatedValuesListIdCleaned.json", JSON.stringify(RelatedValuesListIdCleaned), err => console.log(err));
-    fs.writeFileSync("AllQuestions.json", JSON.stringify(AllQuestions.concat(SubformsQuests)), err => console.log(err));
-    fs.writeFileSync("Sections.sql", Keys, err => console.log(err));
+   // fs.writeFileSync("jsondata.json", JSON.stringify(cleaneddata), err => console.log(err));
+   // fs.writeFileSync("Subforms.json", JSON.stringify(Subforms), err => console.log(err));
+   // fs.writeFileSync("SubformsQuests.json", JSON.stringify(SubformsQuests), err => console.log(err));
+   // fs.writeFileSync("ValuesListIds.json", JSON.stringify(ValuesListIds), err => console.log(err));
+   // fs.writeFileSync("RelatedValuesListIdCleaned.json", JSON.stringify(RelatedValuesListIdCleaned), err => console.log(err));
+   // fs.writeFileSync("AllQuestions.json", JSON.stringify(AllQuestions.concat(SubformsQuests)), err => console.log(err));
+   // fs.writeFileSync("Sections.sql", Keys, err => console.log(err));
 
     const Arrkeys =  AllQuestions.concat( SubformsQuests ).map( a => Object.keys( a ) ).flat();
 
-    console.log(FupForms, "==============");
+    let FupSubSections =  '';
 
+    FupSectionsArr.forEach( (el, index) => {
+      FupSubSections += `INSERT INTO FupSections ( [Name], IdSectionFK , Order ) VALUES ( '${el.Name}', idsectionfk ,${index+1} );
+`;
 
-    let FupSections =  '';
+  } );
 
-    FupSectionsArr.forEach( el => {
-
-
-      FupSections += `
-      INSERT INTO FupSections ( [Name], [Order] ) VALUES ( '${el.Section}', '${el.Order}' );
-      `;
-
-    } )
-
+   const folderPath = path.join(__dirname, "SQL");
    
+   const File_FupSections_SQL = path.join(folderPath, "Sections.sql");
+   const File_FupSubSections_SQL = path.join(folderPath, "SubSections.sql");
+   const File_FupForms_SQL = path.join(folderPath, "FupForms.sql");
+   const File_FupMain_SQL = path.join(folderPath, "FupMain.sql");
 
-    if (!fs.existsSync(folderPath)) {
-      // Crea la carpeta si no existe
-      fs.mkdirSync(folderPath, { recursive: true }); // 'recursive: true' crea carpetas anidadas si es necesario
+    if ( !fs.existsSync( folderPath ) )
+    {
+      fs.mkdirSync( folderPath, { recursive: true }); 
       console.log('Carpeta creada:', folderPath);
-    } else {
-      console.log('La carpeta ya existe:', folderPath);
     }
 
-
     fs.mkdirSync(folderPath, { recursive: true });
+
+    const FupSectionArraysSql = [ 
+      "Descripción",
+      "Recursos humanos",
+      "Mercadotecnia",
+      "Recursos Materiales", 
+      "Operaciones",
+      "Continuidad del Negocio",
+      "Perfiles de Acceso",
+      "Experiencia de del Cliente",
+      "Jurídico",
+      "Contraloría",
+      "Administración de Riesgos",
+      "Prevención de fraudes",
+      "CISO",
+      "Hiperpersonalización"
+     ].map(el => `INSERT INTO FupSections ([Name]) VALUES('${el}');
+`).join(" ");
+
+console.log( FupMain );
+
+const FupFormsArr = FupForms.map( el => `INSERT INTO FupForms ([IdSubSectionFK], IdsArcher) Values( ${el.IdSubSectionFK}, '${el.IdsArcher}' );
+` ).join(' ');
+
+const FupMainArr =  FupMain.map(el => `INSERT INTO FupMain ( IdArcher, Order, Vinculated ) VALUES( ${el.IdArcher}, 0, NULL );
+`).join(' ');
+
+fs.writeFileSync( File_FupSections_SQL , FupSectionArraysSql, err => console.log(err));
+
+fs.writeFileSync(  File_FupSubSections_SQL , FupSubSections, err => console.log(err));
+
+fs.writeFileSync(  File_FupForms_SQL , FupFormsArr, err => console.log(err));
+
+fs.writeFileSync(  File_FupMain_SQL , FupMainArr, err => console.log(err));
 
 
 
 });
-
-
