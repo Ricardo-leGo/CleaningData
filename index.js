@@ -170,13 +170,13 @@ const AllQuestions =  [];
     } );
 
         
-   // fs.writeFileSync("jsondata.json", JSON.stringify(cleaneddata), err => console.log(err));
-   // fs.writeFileSync("Subforms.json", JSON.stringify(Subforms), err => console.log(err));
-   // fs.writeFileSync("SubformsQuests.json", JSON.stringify(SubformsQuests), err => console.log(err));
-   // fs.writeFileSync("ValuesListIds.json", JSON.stringify(ValuesListIds), err => console.log(err));
-   // fs.writeFileSync("RelatedValuesListIdCleaned.json", JSON.stringify(RelatedValuesListIdCleaned), err => console.log(err));
-   // fs.writeFileSync("AllQuestions.json", JSON.stringify(AllQuestions.concat(SubformsQuests)), err => console.log(err));
-   // fs.writeFileSync("Sections.sql", Keys, err => console.log(err));
+   fs.writeFileSync("jsondata.json", JSON.stringify(cleaneddata), err => console.log(err));
+   fs.writeFileSync("Subforms.json", JSON.stringify(Subforms), err => console.log(err));
+   fs.writeFileSync("SubformsQuests.json", JSON.stringify(SubformsQuests), err => console.log(err));
+   fs.writeFileSync("ValuesListIds.json", JSON.stringify(ValuesListIds), err => console.log(err));
+   fs.writeFileSync("RelatedValuesListIdCleaned.json", JSON.stringify(RelatedValuesListIdCleaned), err => console.log(err));
+   fs.writeFileSync("AllQuestions.json", JSON.stringify(AllQuestions.concat(SubformsQuests)), err => console.log(err));
+   fs.writeFileSync("Sections.sql", Keys, err => console.log(err));
 
     const Arrkeys =  AllQuestions.concat( SubformsQuests ).map( a => Object.keys( a ) ).flat();
 
@@ -194,6 +194,7 @@ const AllQuestions =  [];
    const File_FupSubSections_SQL = path.join(folderPath, "SubSections.sql");
    const File_FupForms_SQL = path.join(folderPath, "FupForms.sql");
    const File_FupMain_SQL = path.join(folderPath, "FupMain.sql");
+   const File_FupItems_SQL = path.join(folderPath, "FupItems.sql");
 
     if ( !fs.existsSync( folderPath ) )
     {
@@ -229,6 +230,10 @@ const FupFormsArr = FupForms.map( el => `INSERT INTO FupForms ([IdSubSectionFK],
 const FupMainArr =  FupMain.map(el => `INSERT INTO FupMain ( IdArcher, Order, Vinculated ) VALUES( ${el.IdArcher}, 0, NULL );
 `).join(' ');
 
+
+const FupItemsArr  =  AllQuestions.map( el => `Insert INTO FupItem ([Display], IdArcher, Alias, TypeText, [Type], LevelId, RelatedValuesListId,  SubformFieldId, SubformData ) VALUES ('${el.Display}',${el.IdArcher},'${el.Alias}','${el.TypeText}',${el.Type}, ${el.LevelId}, ${(el?.RelatedValuesListId? "'"+JSON.stringify(el.RelatedValuesListId)+ "'," :"NULL," ) } ${el.SubformFieldId?el.SubformFieldId+",":"NULL," } ${el.SubformData? "'"+JSON.stringify(el.SubformData)+"'":"NULL"}); 
+`).join(' ');
+
 fs.writeFileSync( File_FupSections_SQL , FupSectionArraysSql, err => console.log(err));
 
 fs.writeFileSync(  File_FupSubSections_SQL , FupSubSections, err => console.log(err));
@@ -237,6 +242,7 @@ fs.writeFileSync(  File_FupForms_SQL , FupFormsArr, err => console.log(err));
 
 fs.writeFileSync(  File_FupMain_SQL , FupMainArr, err => console.log(err));
 
+fs.writeFileSync(  File_FupItems_SQL , FupItemsArr, err => console.log(err));
 
 
 });
