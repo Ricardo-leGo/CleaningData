@@ -231,7 +231,7 @@ const FupMainArr =  FupMain.map(el => `INSERT INTO FupMain ( IdArcher, Order, Vi
 `).join(' ');
 
 
-const FupItemsArr  =  AllQuestions.map( el => `Insert INTO FupItem ([Display], IdArcher, Alias, TypeText, [Type], LevelId, RelatedValuesListId,  SubformFieldId, SubformData ) VALUES ('${el.Display}',${el.IdArcher},'${el.Alias}','${el.TypeText}',${el.Type}, ${el.LevelId}, ${(el?.RelatedValuesListId? "'"+JSON.stringify(el.RelatedValuesListId)+ "'," :"NULL," ) } ${el.SubformFieldId?el.SubformFieldId+",":"NULL," } ${el.SubformData? "'"+JSON.stringify(el.SubformData)+"'":"NULL"}); 
+const FupItemsArr  =  AllQuestions.concat( SubformsQuests ).map( el => `Insert INTO FupItem ([Display], IdArcher, Alias, TypeText, [Type], LevelId, RelatedValuesListId,  SubformFieldId, SubformData ) VALUES ('${el.Display}',${el.IdArcher},'${el.Alias}','${el.TypeText}',${el.Type}, ${el.LevelId}, ${(el?.RelatedValuesListId? "'"+JSON.stringify(el.RelatedValuesListId)+ "'," :"NULL," ) } ${el.SubformFieldId?el.SubformFieldId+",":"NULL," } ${el.SubformData? "'"+JSON.stringify(el.SubformData)+"'":"NULL"}); 
 `).join(' ');
 
 fs.writeFileSync( File_FupSections_SQL , FupSectionArraysSql, err => console.log(err));
